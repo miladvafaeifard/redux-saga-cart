@@ -21,7 +21,7 @@ import { currentUserSelector } from '../selectors';
 export function* handleIncreaseItemQuantity({id}) {
     yield put(setItemQuantityFetchStatus(FETCHING));
     const user = yield select(currentUserSelector);
-    const response = yield call(fetch, `http://localhost:8081/cart/add/${user.get('id')}/${id}`)
+    const response = yield call(fetch, `http://localhost:8081/cart/add/${user.get('id')}/${id}`);
     console.info('got resonse: ', response);
     
     if (response.status !== 200) {
@@ -32,13 +32,18 @@ export function* handleIncreaseItemQuantity({id}) {
     yield put(setItemQuantityFetchStatus(FETCHED));
 }
 
-export function* handleDecreaseItemQuantity() {
-
+export function* handleDecreaseItemQuantity({id}) {
+    yield put(setItemQuantityFetchStatus(FETCHING));
+    
+    const user = yield select(currentUserSelector);
+    const response = yield call(fetch, `http://localhost:8081/cart/remove/${user.get('id')}/${id}`);
+    console.info('got resonse: ', response);
+    yield put(setItemQuantityFetchStatus(FETCHED));
 }
 
 export function* itemQuantitySaga() {
     yield [
-        //takeLatest(DECREASE_ITEM_QUANTITY, handleDecreaseItemQuantity),
+        takeLatest(DECREASE_ITEM_QUANTITY, handleDecreaseItemQuantity),
         takeLatest(INCREASE_ITEM_QUANTITY, handleIncreaseItemQuantity)
     ];
 }
